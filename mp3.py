@@ -1,7 +1,16 @@
 import pymongo
-import requests  # Mantenemos la importación en caso de que necesites conectarte a la API nuevamente.
+import requests  
 
-def print_feriados(title, feriados):
+def print_feriados(title, feriados):  # Generamos salida para ordenar los datos solicitados, así evitamos comentar código
+   
+    """
+    Función para imprimir los feriados de manera formateada y legible.
+
+    Parámetros:
+        - title (str): Título de la sección que se va a imprimir.
+        - feriados (list): Lista de documentos de feriados obtenidos de MongoDB.
+    """
+   
     print(f"\n{title}:")
     for feriado in feriados:
         print(f"  - Nombre: {feriado['nombre']}")
@@ -11,6 +20,12 @@ def print_feriados(title, feriados):
         if feriado['comentarios']:
             print(f"    Comentarios: {feriado['comentarios']}")
         print()  # Línea en blanco entre feriados
+
+
+# ----------------------------------------
+# 1. Conexión a MongoDB y carga de datos
+# ----------------------------------------
+
 
 def main():
     # Conectar al servidor MongoDB
@@ -40,6 +55,13 @@ def main():
     # else:
     #     print(f"Error en la solicitud a la API. Código de estado: {response.status_code}")
 
+
+# ----------------------------------------
+# 2. Segunda parte: Consultas realizadas posterior a la carga
+# ----------------------------------------
+
+
+
     # a. Obtener todos los feriados en la colección
     all_holidays = list(mycollection.find())
     print_feriados("Todos los feriados", all_holidays)
@@ -61,6 +83,29 @@ def main():
         "fecha": {"$gte": "2024-03-11", "$lte": "2024-08-31"}
     }))
     print_feriados("Feriados entre 11 de marzo y 31 de agosto", date_range_holidays)
+
+
+
+# ----------------------------------------
+# 3. Tercera parte: Insertar un nuevo feriado
+# ----------------------------------------
+
+
+#     nuevo_feriado = {
+#         "nombre": "Día de las luces",
+#         "comentarios": None,
+#         "fecha": "2024-03-11",
+#         "irrenunciable": "0",
+#         "tipo": "Religioso"
+#     }
+
+#     # Insertar el nuevo feriado en la colección
+#     mycollection.insert_one(nuevo_feriado)
+#     print("\nNuevo feriado 'Día de las luces' insertado correctamente.")
+
+    # Verificar que el feriado fue insertado correctamente
+    inserted_holiday = mycollection.find_one({"nombre": "Día de las luces"})
+    print_feriados("Verificación del feriado insertado", [inserted_holiday])
 
 if __name__ == "__main__":
     main()
